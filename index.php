@@ -143,14 +143,18 @@ if (substr_count(getcwd(), "dev") > 0) {
 
 
         function getParams(graph) {
+            givens = "dur="+dur+"&width="+width+"&height="+height;
             switch(graph)
             {
                 case "combined":
-                    return "./draw-combined.php?dur="+dur+"&width="+width+"&height="+height;
+                    return "./draw-combined.php?"+givens;
                     break;
                 case "in":
                 case "out":
-                    return "./draw-directions.php?dir="+graph+"&dur="+dur+"&width="+width+"&height="+height;
+                    return "./draw-directions.php?dir="+graph+"&"+givens;
+                    break;
+                default:
+                    return "./draw-"+graph+".php?"+givens;
                     break;
             }
         }
