@@ -4,10 +4,14 @@
 $dw = 97;
 $dh = 79;
 $params = array("dur" => "3h",
-                "width" => 550 - $dw,
+                "width" => 2*(550 - $dw)+$dw,
                 "height" => 309 - $dh,
             );
 
+$graphs = array("Combined Traffic" => "combined",
+                "Inbound Traffic" => "in",
+                "Outbound Traffic" => "out",
+            );
 $paramList = array();
 foreach($params as $k => $v)
 {
@@ -18,7 +22,6 @@ foreach($params as $k => $v)
 }
 
 $paramString = implode("&", $paramList);
-$totalWidth = 2*($params['width'] + $dw);
 $intervals = array("3h", "8h", "12h", "1d", "3d", "1week", "2weeks", "1month");
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -35,20 +38,10 @@ $intervals = array("3h", "8h", "12h", "1d", "3d", "1week", "2weeks", "1month");
                 font-size: x-small;
             }
 
-            div.dirGraph {
-                width: <?php echo $params['width'] + $dw ?>px;
-                height: <?php echo $params['height'] + $dh ?>px;
-            }
-            div.combinedGraph {
-                width: <?php echo $totalWidth ?>px;
-                height: <?php echo $params['height'] + 93 ?>px;
-            }
-
-            div.in  { float: left; }
-            div.out { float: right; }
-            div.combined { text-align:center; }
+            div#graph { width: <?php echo $params['width'] + $dw ?>px;
+                       height: <?php echo $params['height'] + $dh ?>px; }
             div#container { 
-                width: <?php echo $totalWidth ?>px;
+                width: <?php echo $params['width'] + $dw ?>px;
                 margin: 0 auto;
             }
             div.loading { background: url(/spinner.gif) no-repeat center center; }
@@ -69,20 +62,23 @@ $intervals = array("3h", "8h", "12h", "1d", "3d", "1week", "2weeks", "1month");
         <script type="text/javascript">
             var dur = "<?php echo $params['dur'] ?>";
             var width = <?php echo $params['width'] ?>;
-            var twiceWidth = <?php echo $dw+(2*$params['width']) ?>;
+            var graph = "combined";
             var height = <?php echo $params['height'] ?>;
+
             function updateHeader() {
                 $("#header").text('Looking at '+dur+' of data');
             }
+
             function updateDur(newDur) {
                 dur = newDur;
                 updateHeader();
-                $(loader('in', './draw-directions.php', inTimer));
-                $('#update_in').text('');
-                $(loader('out', './draw-directions.php', outTimer));
-                $('#update_out').text('');
-                $(loader('combined', './draw-combined.php', combinedTimer));
-                $('#update_combined').text('');
+                $(loader(graph, timer));
+                $('#graph_message').text('');
+            }
+            function updateGraph(newGraph) {
+                graph = newGraph;
+                $(loader(graph, timer));
+                $('#graph_message').text('');
             }
 
         </script>
@@ -94,51 +90,71 @@ $intervals = array("3h", "8h", "12h", "1d", "3d", "1week", "2weeks", "1month");
             <div id="nav">
                 <ul>
 <?php
+foreach ( $graphs as $desc => $g ) {
+?>
+                    <li><a href="#" onClick="updateGraph('<?php echo $g ?>');"><?php echo $desc; ?></a></li>
+<?php
+}
+?>
+                </ul>
+                <ul>
+<?php
 foreach ( $intervals as $int ) {
 ?>
-                    <li><a href="#" onClick="updateDur('<?php echo $int ?>')"><?php echo $int; ?></a></li>
+                    <li><a href="#" onClick="updateDur('<?php echo $int ?>');"><?php echo $int; ?></a></li>
 <?php
 }
 ?>
                 </ul>
             </div>
-            <div class="dirGraph in" id="in"></div>
-            <div class="dirGraph out" id="out"></div>
-            <br clear="both" />
-            <div class="in" id="update_in"></div>
-            <div class="out" id="update_out"></div>
-            <br clear="both" />
-            <div class="combinedGraph combined" id="combined"></div>
-            <div class="combined" id="update_combined"></div>
+            <div id="graph"></div>
+            <div id="graph_message"></div>
         </div>
         <script type="text/javascript">
-        var inTimer, outTimer, combinedTimer;
-        var loader = function(dir, baseURL, timer) {
-            $('#'+dir).empty();
-            $('#'+dir).addClass('loading');
-            if (dir == 'combined') {
-                params = "?dur="+dur+"&width="+twiceWidth+"&height="+height;
-            } else {
-                params = "?dir="+dir+"&dur="+dur+"&width="+width+"&height="+height;
-            }
+        var timer;
+        var loader = function(graph, timer) {
+            $('#graph').empty();
+            $('#graph').addClass('loading');
+            params = getParams(graph);
             var img = new Image();
             $(img)
                 .load(function() {
                     $(this).hide();
-                    $('#'+dir).removeClass('loading').append(this);
+                    $('#graph').removeClass('loading').append(this);
                     $(this).fadeIn();
-                    $('#update_'+dir).text('updated '+(new Date()).toLocaleString());
-                    timer = setTimeout("$(loader('"+dir+"', '"+baseURL+"', "+timer+"))", 1000*60*5);
+<?php
+if (substr_count(getcwd(), "dev") > 0) {
+?>
+                    $('#graph_message').text('updated with params = '+params);
+<?php
+} else {
+?>
+                    $('#graph_message').text('updated '+(new Date()).toLocaleString());
+<?php
+}
+?>
+                    timer = setTimeout("$(loader("+graph+", "+timer+"))", 1000*60*5);
                 })
 
-                .error(function() { alert("error loading image. div = "+dir+" ; params = "+params); })
+                .error(function() { $('#graph_message').text("Error updating: params = "+params); } )
 
-                .attr('src', baseURL+params);
+                .attr('src', params);
         };
 
-        $(loader('in', './draw-directions.php', inTimer));
-        $(loader('out', './draw-directions.php', outTimer));
-        $(loader('combined', './draw-combined.php', combinedTimer));
+
+        function getParams(graph) {
+            switch(graph)
+            {
+                case "combined":
+                    return "./draw-combined.php?dur="+dur+"&width="+width+"&height="+height;
+                    break;
+                case "in":
+                case "out":
+                    return "./draw-directions.php?dir="+graph+"&dur="+dur+"&width="+width+"&height="+height;
+                    break;
+            }
+        }
+        $(loader(graph, timer));
         </script>
     </body>
 </html>
