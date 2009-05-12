@@ -7,19 +7,19 @@
 # 2016 samples * 5 minutes = 1 week
 
 if [[ ! -f myrouter.rrd ]] ; then
-    rrdtool create myrouter.rrd         \
-             DS:input:COUNTER:600:U:U   \
-             DS:output:COUNTER:600:U:U  \
-             RRA:AVERAGE:0.5:1:600      \
-             RRA:AVERAGE:0.5:6:700      \
-             RRA:AVERAGE:0.5:24:775     \
-             RRA:AVERAGE:0.5:288:797    \
-             RRA:AVERAGE:0.5:2016:114   \
-             RRA:MAX:0.5:1:600          \
-             RRA:MAX:0.5:6:700          \
-             RRA:MAX:0.5:24:775         \
-             RRA:MAX:0.5:288:797        \
-             RRA:MAX:0.5:2016:114
+    rrdtool create myrouter.rrd    \
+        DS:input:COUNTER:600:U:U   \
+        DS:output:COUNTER:600:U:U  \
+        RRA:AVERAGE:0.5:1:600      \
+        RRA:AVERAGE:0.5:6:700      \
+        RRA:AVERAGE:0.5:24:775     \
+        RRA:AVERAGE:0.5:288:797    \
+        RRA:AVERAGE:0.5:2016:114   \
+        RRA:MAX:0.5:1:600          \
+        RRA:MAX:0.5:6:700          \
+        RRA:MAX:0.5:24:775         \
+        RRA:MAX:0.5:288:797        \
+        RRA:MAX:0.5:2016:114
 fi
 
 # most current (1 minutes)
@@ -29,16 +29,16 @@ fi
 # 10800 samples * 1 minute = 1 week
 if [[ ! -f mysolarpanel.rrd ]] ; then
     rrdtool create mysolarpanel.rrd     \
-             --start 1241593200         \
-             DS:pac:GAUGE:1100:U:U      \
-             RRA:AVERAGE:0.5:1:1100     \
-             RRA:AVERAGE:0.5:30:3500    \
-             RRA:AVERAGE:0.5:120:3875   \
-             RRA:AVERAGE:0.5:1440:3985  \
-             RRA:AVERAGE:0.5:10800:570  \
-             RRA:MAX:0.5:1:1100         \
-             RRA:MAX:0.5:30:3500        \
-             RRA:MAX:0.5:120:3875       \
-             RRA:MAX:0.5:1440:3985      \
-             RRA:MAX:0.5:10800:570
+        --step 60 --start 1241593200    \
+        DS:pac:GAUGE:1100:U:U           \
+        RRA:AVERAGE:0.5:1:1100          \
+        RRA:AVERAGE:0.5:30:3500         \
+        RRA:AVERAGE:0.5:120:3875        \
+        RRA:AVERAGE:0.5:1440:3985       \
+        RRA:AVERAGE:0.5:10800:570       \
+        RRA:MAX:0.5:1:1100              \
+        RRA:MAX:0.5:30:3500             \
+        RRA:MAX:0.5:120:3875            \
+        RRA:MAX:0.5:1440:3985           \
+        RRA:MAX:0.5:10800:570
 fi
