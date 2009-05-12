@@ -73,12 +73,12 @@ $intervals = array("3h", "8h", "12h", "1d", "3d", "1week", "2weeks", "1month");
             function updateDur(newDur) {
                 dur = newDur;
                 updateHeader();
-                $(loader(graph, timer));
+                loader();
                 $('#graph_message').text('');
             }
             function updateGraph(newGraph) {
                 graph = newGraph;
-                $(loader(graph, timer));
+                loader();
                 $('#graph_message').text('');
             }
 
@@ -113,7 +113,8 @@ foreach ( $intervals as $int ) {
         </div>
         <script type="text/javascript">
         var timer;
-        var loader = function(graph, timer) {
+        var loader = function() {
+            timer = clearTimeout(timer);
             $('#graph').empty();
             $('#graph').addClass('loading');
             params = getParams(graph);
@@ -134,12 +135,12 @@ if (substr_count(getcwd(), "dev") > 0) {
 <?php
 }
 ?>
-                    timer = setTimeout("$(loader('"+graph+"', "+timer+"))", 1000*60*5);
                 })
 
                 .error(function() { $('#graph_message').text("Error updating: params = "+params); } )
 
                 .attr('src', params);
+            timer = setTimeout("loader()", 1000*60*5);
         };
 
 
@@ -161,7 +162,7 @@ if (substr_count(getcwd(), "dev") > 0) {
                     break;
             }
         }
-        $(loader(graph, timer));
+        loader();
         </script>
     </body>
 </html>
