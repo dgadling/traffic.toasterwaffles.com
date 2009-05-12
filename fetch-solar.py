@@ -53,6 +53,8 @@ if options.time:
     target = target.replace(hour=lastTime.tm_hour, minute=lastTime.tm_min,
             second=lastTime.tm_sec)
 
+if options.verbose:
+    print "target = %s" % target
 
 http = httplib2.Http()
 headers = {
@@ -105,9 +107,9 @@ for row in soup.contents:
 
 if options.verbose:
     print "Found %d data points to add" % len(updates)
-    print updates
 
-os.system("/usr/bin/rrdtool update %s %s" % (rrdFile, ' '.join(updates)))
-cookie = open(os.path.expanduser(options.cookieFile), 'w')
-print >> cookie,lastRecord.strftime("%H:%M:%S")
-cookie.close()
+if len(updates) > 0 :
+    os.system("/usr/bin/rrdtool update %s %s" % (rrdFile, ' '.join(updates)))
+    cookie = open(os.path.expanduser(options.cookieFile), 'w')
+    print >> cookie,lastRecord.strftime("%H:%M:%S")
+    cookie.close()
