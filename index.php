@@ -11,6 +11,7 @@ $params = array("dur" => "3h",
 $graphs = array("Combined Traffic" => "combined",
                 "Inbound Traffic" => "in",
                 "Outbound Traffic" => "out",
+                "Solar Output" => "solar"
             );
 $paramList = array();
 foreach($params as $k => $v)
