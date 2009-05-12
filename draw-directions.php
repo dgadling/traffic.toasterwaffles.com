@@ -40,9 +40,9 @@ $command = "/usr/bin/rrdtool graph $outFile "
          . " -c 'FRAME#f2f2f2'"
          . " -c 'ARROW#f2f2f2'"
          . " 'DEF:$key=$base/myrouter.rrd:{$key}put:AVERAGE'"
-         . " 'GPRINT:$key:LAST:Last\: %5.2lf %sbytes/sec'"
-         . " 'GPRINT:$key:MAX:Max\: %5.2lf %sbytes/sec'"
-         . " 'GPRINT:$key:AVERAGE:Avg\: %5.2lf%sbytes'"
+         . " 'GPRINT:$key:LAST:Last\: %5.2lf %sBps'"
+         . " 'GPRINT:$key:MAX:Max\: %5.2lf %sBps'"
+         . " 'GPRINT:$key:AVERAGE:Avg\: %5.2lf%sBps'"
          . " 'COMMENT:\c'"
          . " 'AREA:$key#$startColor'";
          ;
