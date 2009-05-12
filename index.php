@@ -143,7 +143,9 @@ if (substr_count(getcwd(), "dev") > 0) {
 
 
         function getParams(graph) {
-            givens = "dur="+dur+"&width="+width+"&height="+height;
+            d = new Date()
+            k = d.getTime()
+            givens = "k="+k+"&dur="+dur+"&width="+width+"&height="+height;
             switch(graph)
             {
                 case "combined":
