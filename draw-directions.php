@@ -1,6 +1,4 @@
 <?php
-#header("Content-type: image/png");
-
 include_once("./gradient.php");
 
 $base="/home/httpd/traffic.toasterwaffles.com";
@@ -58,5 +56,12 @@ $command .= " > /dev/null";
 $rc = 0;
 
 system($command, $rc);
-passthru("cat $outFile");
+
+if ($rc == 0 ) {
+    header("Content-type: image/png");
+    passthru("cat $outFile");
+} else {
+    echo "$command<br/><br/>";
+    echo $rc;
+}
 ?>
