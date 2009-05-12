@@ -29,6 +29,7 @@ fi
 # 10800 samples * 1 minute = 1 week
 if [[ ! -f mysolarpanel.rrd ]] ; then
     rrdtool create mysolarpanel.rrd     \
+             --start 1241593200         \
              DS:pac:GAUGE:1100:U:U      \
              RRA:AVERAGE:0.5:1:1100     \
              RRA:AVERAGE:0.5:30:3500    \
