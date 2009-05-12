@@ -133,7 +133,7 @@ if (substr_count(getcwd(), "dev") > 0) {
 <?php
 }
 ?>
-                    timer = setTimeout("$(loader("+graph+", "+timer+"))", 1000*60*5);
+                    timer = setTimeout("$(loader('"+graph+"', "+timer+"))", 1000*60*5);
                 })
 
                 .error(function() { $('#graph_message').text("Error updating: params = "+params); } )
