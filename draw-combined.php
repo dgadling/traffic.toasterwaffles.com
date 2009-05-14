@@ -29,12 +29,11 @@ $command = "/usr/bin/rrdtool graph $outFile "
          . " -c 'ARROW#f2f2f2'"
          . " 'DEF:in=$base/myrouter.rrd:input:AVERAGE'"
          . " 'DEF:out=$base/myrouter.rrd:output:AVERAGE'"
-         . " 'CDEF:total=out,in,+' 'AREA:total#{$colors['out']}'"
+         . " 'CDEF:total=out,in,+' 'AREA:total#{$colors['out']}:out'"
+         . " 'AREA:out#{$colors['in']}:in'"
          . " 'GPRINT:total:LAST:Last\: %5.2lf %sBps'"
          . " 'GPRINT:total:MAX:Max\: %5.2lf %sBps'"
          . " 'GPRINT:total:AVERAGE:Avg\: %5.2lf%sBps'"
-         . " 'COMMENT:\c'"
-         . " 'AREA:out#{$colors['in']}'"
          ;
 
 
