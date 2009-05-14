@@ -69,13 +69,20 @@ headers = {
                    'Host': 'www.pvwatch.com',
         }
 
+if options.verbose:
+    print "Requesting http://www.pvwatch.com"
 response, content = http.request('http://www.pvwatch.com/', 'GET', headers=headers)
 headers['Cookie'] = (response['set-cookie'].split(';'))[0]
 
 url = 'http://www.pvwatch.com'
 body = {'username': username, 'password': password, 'submit': 'Log in'}
 
+if options.verbose:
+    print "Logging in to http://www.pvwatch.com"
 http.request(url, 'POST', headers=headers, body=urllib.urlencode(body))
+
+if options.verbose:
+    print "Requesting http://www.pvwatch.com/?s=do"
 http.request('http://www.pvwatch.com/?s=do', 'GET', headers=headers)
 
 headers['Referer'] = 'http://www.pvwatch.com/?s=do'
@@ -86,6 +93,8 @@ data = dict(date=target.strftime("%Y-%m-%d"),
         pac="on",
         submit="Submit")
 
+if options.verbose:
+    print "Asking for data from %s" % url
 response, content = http.request(url, 'POST', urllib.urlencode(data), headers=headers)
 
 soup = BeautifulSoup(content).contents[0]
