@@ -91,18 +91,17 @@ data = dict(date=target.strftime("%Y-%m-%d"),
         serial_number=serial,
         datatype="datacols",
         pac="on",
-        submit="Submit")
+        submit="View Inv")
 
 if options.verbose:
     print "Asking for data from %s" % url
 response, content = http.request(url, 'POST', urllib.urlencode(data), headers=headers)
 
-soup = BeautifulSoup(content).contents[0]
-soup.contents.pop(0)
+soup = BeautifulSoup(content).contents[1]
 
 lastRecord = datetime.datetime.now()
 updates = []
-for row in soup.contents:
+for row in soup.contents[1:]:
     recordDate = datetime.datetime(*(time.strptime(row.contents[1].contents[0], "%Y-%m-%d")[0:3]))
     recordTime = time.strptime(row.contents[2].contents[0], "%H:%M:%S")
     recordedOn = recordDate.replace(hour=recordTime.tm_hour,
