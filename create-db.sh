@@ -22,6 +22,27 @@ if [[ ! -f myrouter.rrd ]] ; then
         RRA:MAX:0.5:2016:114
 fi
 
+# most current (5 minutes)
+# 6 samples * 5 minutes = 30 minutes
+# 24 samples * 5 minutes = 2 hours
+# 288 samples * 5 minutes = 1 day
+# 2016 samples * 5 minutes = 1 week
+if [[ ! -f mytotaltraffic.rrd ]] ; then
+    rrdtool create mytotaltraffic.rrd \
+        DS:input:GAUGE:660:U:U        \
+        DS:output:COUNTER:600:U:U     \
+        RRA:AVERAGE:0.5:1:9000        \
+        RRA:AVERAGE:0.5:6:700         \
+        RRA:AVERAGE:0.5:24:775        \
+        RRA:AVERAGE:0.5:288:797       \
+        RRA:AVERAGE:0.5:2016:114      \
+        RRA:MAX:0.5:1:9000            \
+        RRA:MAX:0.5:6:700             \
+        RRA:MAX:0.5:24:775            \
+        RRA:MAX:0.5:288:797           \
+        RRA:MAX:0.5:2016:114
+fi
+
 # most current (1 minutes)
 # 30 samples * 1 minute = 30 minutes
 # 120 samples * 1 minute = 2 hours
