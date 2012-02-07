@@ -3,10 +3,11 @@
 import urllib
 import httplib2
 import datetime, time
-import os, sys
+import os
 from BeautifulSoup import BeautifulSoup
 from optparse import OptionParser
 import ConfigParser
+import logging
 
 
 parser = OptionParser()
@@ -34,6 +35,9 @@ rrdFile = config.get('main', 'rrd')
 
 target = datetime.datetime.now()
 
+if options.verbose:
+    logging.basicConfig(level=logging.DEBUG)
+
 if options.cookieFile:
     try:
         dateBits = open(os.path.expanduser(options.cookieFile), 'r').readline().split(':')
@@ -53,8 +57,7 @@ if options.time:
     target = target.replace(hour=lastTime.tm_hour, minute=lastTime.tm_min,
             second=lastTime.tm_sec)
 
-if options.verbose:
-    print "target = %s" % target
+logging.debug("target = %s" % target)
 
 http = httplib2.Http()
 headers = {
@@ -69,20 +72,17 @@ headers = {
                    'Host': 'www.pvwatch.com',
         }
 
-if options.verbose:
-    print "Requesting http://www.pvwatch.com"
+logging.debug("Requesting http://www.pvwatch.com")
 response, content = http.request('http://www.pvwatch.com/', 'GET', headers=headers)
 headers['Cookie'] = (response['set-cookie'].split(';'))[0]
 
 url = 'http://www.pvwatch.com'
 body = {'username': username, 'password': password, 'submit': 'Log in'}
 
-if options.verbose:
-    print "Logging in to http://www.pvwatch.com"
+logging.debug("Logging in to http://www.pvwatch.com")
 http.request(url, 'POST', headers=headers, body=urllib.urlencode(body))
 
-if options.verbose:
-    print "Requesting http://www.pvwatch.com/?s=do"
+logging.debug("Requesting http://www.pvwatch.com/?s=do")
 http.request('http://www.pvwatch.com/?s=do', 'GET', headers=headers)
 
 headers['Referer'] = 'http://www.pvwatch.com/?s=do'
@@ -93,8 +93,7 @@ data = dict(date=target.strftime("%Y-%m-%d"),
         pac="on",
         submit="View Inv")
 
-if options.verbose:
-    print "Asking for data from %s" % url
+logging.debug("Asking for data from %s" % url)
 response, content = http.request(url, 'POST', urllib.urlencode(data), headers=headers)
 
 soup = BeautifulSoup(content).contents[1]
@@ -113,8 +112,7 @@ for row in soup.contents[1:]:
         lastRecord = recordedOn
         updates.append("%s:%s" % (recordedOn.strftime("%s"), production))
 
-if options.verbose:
-    print "Found %d data points to add" % len(updates)
+logging.debug( "Found %d data points to add" % len(updates))
 
 if len(updates) > 0 :
     os.system("/usr/bin/rrdtool update %s %s" % (rrdFile, ' '.join(updates)))
